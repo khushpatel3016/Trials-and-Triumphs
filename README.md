@@ -1,5 +1,7 @@
 # Trials and Triumph
 
+Site URL: (Updated daily) [URL](https://trials-and-triumphs.vercel.app/)
+
 Figma:
 https://www.figma.com/design/Q21OYF40ZGowiiioWJGUjQ/trials-and-triumps?node-id=0-1&t=CBdDV4Ik7DN004oJ-1
 
