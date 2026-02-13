@@ -78,7 +78,7 @@ export default function LandingPage() {
 			</div>
 
 			{/* Bottom vignette effect */}
-			{/* <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/60 to-transparent z-1" /> */}
+			<div className="absolute bottom-0 left-0 w-full h-32 bg-linear-to-t from-black/60 to-transparent z-1" />
 		</main>
 	)
 }
