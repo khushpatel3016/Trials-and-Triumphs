@@ -16,7 +16,7 @@ export default function LandingPage() {
 			{/* Background Image */}
 			<div className="absolute inset-0 z-0">
 				<Image
-					src="/landing/bg.png"
+					src="/assets/bg.png"
 					alt="Fantasy Landscape Background"
 					fill
 					className="object-cover"
