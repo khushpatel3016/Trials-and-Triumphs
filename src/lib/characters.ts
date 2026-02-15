@@ -6,6 +6,7 @@ export const CHARACTERS: Character[] = [
     name: 'Knight',
     class: 'Knight',
     hp: 125,
+    atk: 15,
     mana: 40,
     speed: 20,
     strengthUtility: 'Defensive Tank',
@@ -16,13 +17,14 @@ export const CHARACTERS: Character[] = [
       { name: 'Fortified Strike', description: '16 Mana. Deals moderate damage and the Knight takes 20% less damage.' },
       { name: 'Ultimate — Iron Fortress', description: '60 Mana. Roll 14+ → -75% damage taken for one turn + taunt all enemies' }
     ],
-    spriteUrl: '/assets/knight.png' // Placeholder, will check if they exist
+    spriteUrl: '/assets/knight.png'
   },
   {
     id: 'archer',
     name: 'Archer',
     class: 'Archer',
     hp: 105,
+    atk: 22,
     mana: 50,
     speed: 26,
     strengthUtility: 'Mobile Ranged DPS',
@@ -40,6 +42,7 @@ export const CHARACTERS: Character[] = [
     name: 'Wizard',
     class: 'Wizard',
     hp: 110,
+    atk: 20,
     mana: 70,
     speed: 22,
     strengthUtility: 'AoE Controller',
@@ -57,6 +60,7 @@ export const CHARACTERS: Character[] = [
     name: 'Assassin',
     class: 'Assassin',
     hp: 100,
+    atk: 25,
     mana: 40,
     speed: 24,
     strengthUtility: 'Burst Risk Dealer',
@@ -73,9 +77,10 @@ export const CHARACTERS: Character[] = [
     id: 'bard',
     name: 'Bard',
     class: 'Bard',
-    hp: 100,
-    mana: 45,
-    speed: 24,
+    hp: 110,
+    atk: 18,
+    mana: 60,
+    speed: 22,
     strengthUtility: 'Support & Control',
     shortDescription: 'Enhances allies with melodies and disrupts enemies with discordant notes.',
     primaryStatBuff: '+10 Support Boost',
@@ -84,6 +89,14 @@ export const CHARACTERS: Character[] = [
       { name: 'Harmonic Shield', description: '25 Mana. Auto → block next damage instance' },
       { name: 'Ultimate — Requiem of Return', description: '60 Mana. Roll 14+ → revive ally at 30% HP' }
     ],
-    spriteUrl: '/assets/bard.png'
+    spriteUrl: '/assets/bard.png',
+    levelStats: [
+      { level: 1, hp: 110, atk: 18, speed: 22, mana: 60 },
+      { level: 2, hp: 123, atk: 20, speed: 24, mana: 70 },
+      { level: 3, hp: 136, atk: 22, speed: 26, mana: 80 },
+      { level: 4, hp: 149, atk: 24, speed: 28, mana: 90 },
+      { level: 5, hp: 162, atk: 26, speed: 30, mana: 105 },
+      { level: 6, hp: 175, atk: 28, speed: 32, mana: 120 }
+    ]
   }
 ];

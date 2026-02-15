@@ -40,12 +40,11 @@ This section outlines the purpose and significance of the files within the `src`
 - `layout.tsx`: The root layout for the entire application, defining the shared UI (HTML/Body tags) and global providers.
 - `globals.css`: Global Tailwind CSS styles and custom fantasy-themed variables.
 - `page.tsx`: The landing page of the application (Public).
-- `middleware.ts`: Handles route protection and session refreshing for Supabase Auth.
 
 #### Routes
 - `/login/page.tsx`: Entry point for authentication.
 - `/register/page.tsx`: Team registration form where users define their team and player names.
-- `/select-characters/page.tsx`: Interactive character selection screen fetching data from Google Sheets.
+- `/select-characters/page.tsx`: Interactive character selection screen.
 - `/status/page.tsx`: The final team overview page displaying assigned characters and stats.
 - `/auth/callback`: Specialized route to handle Supabase's PKCE auth flow redirects.
 
@@ -54,14 +53,10 @@ This section outlines the purpose and significance of the files within the `src`
 
 ### `/lib` (Client-Side Logic)
 - `/supabase/client.ts`: Singleton Supabase client for browser-side database and auth operations.
-- `/google-sheets/fetcher.ts`: Client-side utility for fetching character data directly from a public CSV endpoint.
+- `characters.ts`: Hardcoded character data and stats.
 
 ### `/types`
 - `index.ts`: Centralized TypeScript interfaces for Teams, Players, Characters, and Classes to ensure type safety across the app.
-
-### `/hooks`
-- `useAuth.ts`: Custom hook to manage user session state on the client.
-- `useCharacterData.ts`: Custom hook for client-side fetching and caching of Google Sheets data.
 
 ## Deploy on Vercel
 
