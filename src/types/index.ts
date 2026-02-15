@@ -5,6 +5,7 @@ export interface Character {
   name: string;
   class: CharacterClass;
   hp: number;
+  atk: number;
   mana: number;
   speed: number;
   strengthUtility: string;
@@ -12,6 +13,13 @@ export interface Character {
   spriteUrl?: string;
   shortDescription: string;
   primaryStatBuff: string;
+  levelStats?: {
+    level: number;
+    hp: number;
+    atk: number;
+    speed: number;
+    mana: number;
+  }[];
 }
 
 export interface Player {
