@@ -9,6 +9,7 @@ import { CHARACTERS } from '@/lib/characters'
 import { Character } from '@/types'
 import { useAuth } from '@/components/AuthProvider'
 import { createClient } from '@/lib/supabase/client'
+import Loading from '@/app/loading'
 
 const hylia = LocalFont({
 	src: '../../fonts/HyliaSerifPrototype-Regular.woff',
@@ -120,13 +121,7 @@ export default function SelectCharactersPage() {
 	}
 
 	if (authLoading || isLoading) {
-		return (
-			<main className="relative min-h-screen w-full flex items-center justify-center bg-[#1a1a1a]">
-				<div className={`${hylia.className} text-3xl text-amber-500 animate-pulse`}>
-					Loading...
-				</div>
-			</main>
-		)
+		return <Loading />
 	}
 
 	const currentPlayer = players[currentPlayerIndex]

@@ -8,6 +8,7 @@ import { Cinzel, Ballet } from 'next/font/google'
 
 import { useAuth } from '@/components/AuthProvider'
 import { createClient } from '@/lib/supabase/client'
+import Loading from '@/app/loading'
 
 const hand = Ballet({ weight: '400' })
 const cinzel = Cinzel()
@@ -73,13 +74,7 @@ export default function RegisterPage() {
 	}
 
 	if (loading) {
-		return (
-			<main className="relative min-h-screen w-full flex items-center justify-center bg-[#1a1a1a]">
-				<div className={`${cinzel.className} text-2xl text-amber-500 animate-pulse`}>
-					Loading...
-				</div>
-			</main>
-		)
+		return <Loading />
 	}
 
 	if (!user) return null
