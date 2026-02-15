@@ -5,6 +5,9 @@ import Image from 'next/image'
 import localFont from 'next/font/local'
 import { Cinzel, Ballet } from 'next/font/google'
 
+import { useAuth } from '@/components/AuthProvider'
+import { useEffect } from 'react'
+
 const hand = Ballet({ weight: '400' })
 const cinzel = Cinzel()
 const hylia = localFont({
@@ -13,11 +16,30 @@ const hylia = localFont({
 
 export default function RegisterPage() {
 	const router = useRouter()
+	const { user, loading } = useAuth()
+
+	useEffect(() => {
+		if (!loading && !user) {
+			router.push('/login')
+		}
+	}, [user, loading, router])
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
 		// Logic to store team data in local state/context will go here
 		router.push('/select-characters')
+	}
+
+	if (loading) {
+		return (
+			<div className="min-h-screen flex items-center justify-center bg-black text-white text-2xl">
+				Loading...
+			</div>
+		)
+	}
+
+	if (!user) {
+		return null
 	}
 
 	return (

@@ -14,7 +14,9 @@ const hylia = LocalFont({
 })
 
 export default function LandingPage() {
-	const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null)
+	const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(
+		null,
+	)
 
 	return (
 		<main className="relative min-h-screen w-full flex flex-col items-center pt-24 pb-20 overflow-x-hidden">
@@ -67,7 +69,7 @@ export default function LandingPage() {
 				{/* Character Grid */}
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 w-full justify-items-center mb-16">
 					{CHARACTERS.map((char) => (
-						<CharacterCard 
+						<CharacterCard
 							key={char.id}
 							character={char}
 							isSelected={selectedCharacter?.id === char.id}
@@ -77,16 +79,20 @@ export default function LandingPage() {
 				</div>
 
 				<div className="mt-8">
-					<Link 
-						href={selectedCharacter ? "/register" : "#"} 
+					<Link
+						href={selectedCharacter ? '/register' : '#'}
 						className={`group relative inline-block transition-all duration-300 ${!selectedCharacter ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
 					>
-						<div className={`absolute inset-0 bg-[#C5A059] blur-md opacity-20 group-hover:opacity-40 transition-opacity rounded-lg ${!selectedCharacter ? 'hidden' : ''}`} />
-						<button 
+						<div
+							className={`absolute inset-0 bg-[#C5A059] blur-md opacity-20 group-hover:opacity-40 transition-opacity rounded-lg ${!selectedCharacter ? 'hidden' : ''}`}
+						/>
+						<button
 							disabled={!selectedCharacter}
 							className="relative px-12 py-4 bg-[#3E2723] hover:bg-[#4E342E] text-white text-xl font-bold tracking-[0.2em] rounded-lg border-2 border-[#C5A059]/40 transition-all duration-300 transform active:scale-95 shadow-[0_0_20px_rgba(0,0,0,0.5)] uppercase disabled:grayscale disabled:opacity-50"
 						>
-							{selectedCharacter ? `Confirm ${selectedCharacter.name}` : 'Select a Role'}
+							{selectedCharacter
+								? `Confirm ${selectedCharacter.name}`
+								: 'Select a Role'}
 						</button>
 					</Link>
 				</div>

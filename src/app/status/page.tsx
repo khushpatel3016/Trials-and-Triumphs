@@ -1,4 +1,27 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/AuthProvider';
+import { useEffect } from 'react';
+
 export default function TeamStatusPage() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-black text-white text-2xl">Loading...</div>;
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <main className="min-h-screen flex flex-col items-center p-8">
       <h1 className="text-4xl font-bold mb-8">Team Status</h1>
