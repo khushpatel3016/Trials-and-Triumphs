@@ -13,6 +13,7 @@ interface CharacterCardProps {
 	isSelected?: boolean
 	onSelect?: (character: Character) => void
 	disabled?: boolean
+	isUnavailable?: boolean
 	level?: number
 }
 
@@ -21,6 +22,7 @@ export default function CharacterCard({
 	isSelected,
 	onSelect,
 	disabled,
+	isUnavailable,
 	level = 1,
 }: CharacterCardProps) {
 	const ultimateSkill =
@@ -36,17 +38,29 @@ export default function CharacterCard({
 		speed: character.speed,
 	}
 
+	const isClickable = !disabled && !isUnavailable
+
 	return (
 		<div
-			onClick={() => !disabled && onSelect?.(character)}
+			onClick={() => isClickable && onSelect?.(character)}
 			className={`relative w-[380px] aspect-[1/1.35] flex flex-col transition-all duration-300 group select-none ${
 				isSelected ? 'scale-105 z-20' : 'hover:scale-[1.02] z-10'
-			} ${disabled ? 'opacity-60 grayscale cursor-not-allowed' : 'cursor-pointer'}`}
+			} ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed'} ${
+				isUnavailable ? 'opacity-40 grayscale blur-[1px]' : isSelected ? '' : disabled ? 'opacity-60 grayscale' : ''
+			}`}
 		>
 			{/* Scroll Background */}
 			<div className="absolute inset-0 z-0">
 				<Image src="/team_details/croppedScroll.png" alt="" fill />
 			</div>
+
+			{isUnavailable && (
+				<div className="absolute inset-0 z-30 flex items-center justify-center rotate-[-15deg]">
+					<div className="bg-red-600/90 text-white px-4 py-2 border-4 border-white font-black text-2xl tracking-tighter shadow-2xl">
+						ALREADY TAKEN
+					</div>
+				</div>
+			)}
 
 			{/* Card Content Wrapper */}
 			<div className="relative z-10 flex flex-col h-full py-16  px-[48px] text-stone-900">

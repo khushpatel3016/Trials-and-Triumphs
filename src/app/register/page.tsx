@@ -1,12 +1,14 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import localFont from 'next/font/local'
 import { Cinzel, Ballet } from 'next/font/google'
 
 import { useAuth } from '@/components/AuthProvider'
-import { useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import Loading from '@/app/loading'
 
 const hand = Ballet({ weight: '400' })
 const cinzel = Cinzel()
@@ -17,6 +19,13 @@ const hylia = localFont({
 export default function RegisterPage() {
 	const router = useRouter()
 	const { user, loading } = useAuth()
+	const supabase = createClient()
+
+	const [teamName, setTeamName] = useState('')
+	const [player1Name, setPlayer1Name] = useState('')
+	const [player2Name, setPlayer2Name] = useState('')
+	const [player3Name, setPlayer3Name] = useState('')
+	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	useEffect(() => {
 		if (!loading && !user) {
@@ -24,23 +33,51 @@ export default function RegisterPage() {
 		}
 	}, [user, loading, router])
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		// Logic to store team data in local state/context will go here
-		router.push('/select-characters')
+		if (!user || !supabase) return
+
+		setIsSubmitting(true)
+
+		try {
+			// Insert team
+			const { data: teamData, error: teamError } = await supabase
+				.from('teams')
+				.insert([
+					{
+						user_id: user.id,
+						name: teamName,
+						current_step: 'SELECT',
+					},
+				])
+				.select()
+				.single()
+
+			if (teamError) throw teamError
+
+			// Insert players
+			const { error: playersError } = await supabase.from('players').insert([
+				{ team_id: teamData.id, name: player1Name, slot_index: 0 },
+				{ team_id: teamData.id, name: player2Name, slot_index: 1 },
+				{ team_id: teamData.id, name: player3Name, slot_index: 2 },
+			])
+
+			if (playersError) throw playersError
+
+			router.push('/select-characters')
+		} catch (error) {
+			console.error('Error registering team:', error)
+			alert('Failed to register team. Please try again.')
+		} finally {
+			setIsSubmitting(false)
+		}
 	}
 
 	if (loading) {
-		return (
-			<div className="min-h-screen flex items-center justify-center bg-black text-white text-2xl">
-				Loading...
-			</div>
-		)
+		return <Loading />
 	}
 
-	if (!user) {
-		return null
-	}
+	if (!user) return null
 
 	return (
 		<main className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden">
@@ -77,8 +114,11 @@ export default function RegisterPage() {
 					</label>
 					<input
 						type="text"
+						value={teamName}
+						onChange={(e) => setTeamName(e.target.value)}
 						className={`w-full p-2 bg-transparent border-2 border-transparent border-b-amber-950 outline-none ${hand.className} text-4xl font-bold text-amber-950 text-center `}
 						required
+						disabled={isSubmitting}
 					/>
 				</div>
 				<div className="w-full">
@@ -89,8 +129,11 @@ export default function RegisterPage() {
 					</label>
 					<input
 						type="text"
+						value={player1Name}
+						onChange={(e) => setPlayer1Name(e.target.value)}
 						className={`w-full p-2 bg-transparent border-2 border-transparent border-b-amber-950 outline-none ${hand.className}  text-4xl font-bold text-amber-950 text-center `}
 						required
+						disabled={isSubmitting}
 					/>
 				</div>
 				<div className="w-full">
@@ -101,8 +144,11 @@ export default function RegisterPage() {
 					</label>
 					<input
 						type="text"
+						value={player2Name}
+						onChange={(e) => setPlayer2Name(e.target.value)}
 						className={`w-full p-2 bg-transparent border-2 border-transparent border-b-amber-950 outline-none ${hand.className}  text-4xl font-bold text-amber-950 text-center `}
 						required
+						disabled={isSubmitting}
 					/>
 				</div>
 				<div className="w-full">
@@ -113,15 +159,19 @@ export default function RegisterPage() {
 					</label>
 					<input
 						type="text"
+						value={player3Name}
+						onChange={(e) => setPlayer3Name(e.target.value)}
 						className={`w-full p-2 bg-transparent border-2 border-transparent border-b-amber-950 outline-none ${hand.className}  text-4xl font-bold text-amber-950 text-center `}
 						required
+						disabled={isSubmitting}
 					/>
 				</div>
 				<button
 					type="submit"
-					className={`${cinzel.className} p-2 py-3 bg-[#260D05] font-bold font-normal tracking-wide`}
+					disabled={isSubmitting}
+					className={`${cinzel.className} p-2 py-3 bg-[#260D05] font-bold font-normal tracking-wide disabled:opacity-50`}
 				>
-					We shall attend &rarr;
+					{isSubmitting ? 'Registering...' : 'We shall attend \u2192'}
 				</button>
 			</form>
 		</main>

@@ -1,46 +1,190 @@
-'use client';
+'use client'
 
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/components/AuthProvider';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import LocalFont from 'next/font/local'
+import { Cinzel } from 'next/font/google'
+import CharacterCard from '@/components/CharacterCard'
+import { CHARACTERS } from '@/lib/characters'
+import { useAuth } from '@/components/AuthProvider'
+import { createClient } from '@/lib/supabase/client'
+import Loading from '@/app/loading'
+
+const hylia = LocalFont({
+	src: '../../fonts/HyliaSerifPrototype-Regular.woff',
+})
+
+const cinzel = Cinzel({ subsets: ['latin'] })
 
 export default function TeamStatusPage() {
-  const router = useRouter();
-  const { user, loading } = useAuth();
+	const router = useRouter()
+	const { user, loading: authLoading } = useAuth()
+	const supabase = createClient()
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
+	const [team, setTeam] = useState<any>(null)
+	const [players, setPlayers] = useState<any[]>([])
+	const [isLoading, setIsLoading] = useState(true)
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-black text-white text-2xl">Loading...</div>;
-  }
+	useEffect(() => {
+		if (!authLoading && !user) {
+			router.push('/login')
+			return
+		}
 
-  if (!user) {
-    return null;
-  }
+		const fetchTeamStatus = async () => {
+			if (!user || !supabase) return
 
-  return (
-    <main className="min-h-screen flex flex-col items-center p-8">
-      <h1 className="text-4xl font-bold mb-8">Team Status</h1>
-      
-      <div className="w-full max-w-4xl space-y-8">
-        <section className="p-6 bg-gray-900 border border-gray-800 rounded-lg">
-          <h2 className="text-2xl font-semibold mb-4 text-blue-400">Team: [Team Name]</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Player/Character status cards */}
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="p-4 bg-gray-800 border border-gray-700 rounded shadow-lg">
-                <h3 className="font-bold mb-2">Player {i}</h3>
-                <p className="text-sm text-gray-400 mb-1">Character: [Character Name]</p>
-                <p className="text-sm text-gray-400">Level: 1</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </main>
-  );
+			try {
+				// Fetch the most recent team for the user
+				const { data: teamData, error: teamError } = await supabase
+					.from('teams')
+					.select('*')
+					.eq('user_id', user.id)
+					.order('created_at', { ascending: false })
+					.limit(1)
+					.maybeSingle()
+
+				if (teamError) throw teamError
+
+				if (!teamData) {
+					setIsLoading(false)
+					return
+				}
+
+				setTeam(teamData)
+
+				// Fetch players for that team
+				const { data: playersData, error: playersError } = await supabase
+					.from('players')
+					.select('*')
+					.eq('team_id', teamData.id)
+					.order('slot_index', { ascending: true })
+
+				if (playersError) throw playersError
+				setPlayers(playersData)
+			} catch (error) {
+				console.error('Error fetching team status:', error)
+			} finally {
+				setIsLoading(false)
+			}
+		}
+
+		if (user) {
+			fetchTeamStatus()
+		}
+	}, [user, authLoading, router, supabase])
+
+	if (authLoading || isLoading) {
+		return <Loading />
+	}
+
+	if (!team) {
+		return (
+			<main className="relative min-h-screen w-full flex flex-col items-center justify-center bg-[#1a1a1a] text-center px-4">
+				<h1 className={`${hylia.className} text-4xl text-amber-500 mb-4`}>
+					No Team Found
+				</h1>
+				<p className="text-stone-400 mb-8">
+					You haven't registered a team yet.
+				</p>
+				<button
+					onClick={() => router.push('/register')}
+					className={`${cinzel.className} px-8 py-3 bg-amber-700 hover:bg-amber-600 text-white font-bold rounded transition-colors`}
+				>
+					Register Team
+				</button>
+			</main>
+		)
+	}
+
+	return (
+		<main className="relative min-h-screen w-full flex flex-col items-center pt-24 pb-20 overflow-x-hidden">
+			{/* Background Image */}
+			<div className="fixed inset-0 z-0">
+				<Image
+					src="/assets/bg.png"
+					alt="Fantasy Landscape Background"
+					fill
+					className="object-cover"
+					priority
+				/>
+				<div className="absolute inset-0 bg-black/60" />
+			</div>
+
+			{/* Main Content */}
+			<div className="relative z-10 flex flex-col items-center w-full max-w-7xl px-4">
+				<div className="mb-16 text-center">
+					<h2
+						className={`${cinzel.className} text-amber-500 text-xl tracking-[0.3em] uppercase mb-2`}
+					>
+						Status of the Brave
+					</h2>
+					<h1
+						className={
+							'text-5xl sm:text-[70px] font-normal leading-tight tracking-[0.03em] bg-linear-to-b from-[#E6B758] via-[#977B44] to-[#4B3A18] bg-clip-text text-transparent' +
+							' ' +
+							hylia.className
+						}
+					>
+						Team {team.name}
+					</h1>
+					<div className="h-1 w-64 bg-linear-to-r from-transparent via-amber-600/50 to-transparent mx-auto mt-4" />
+				</div>
+
+				{/* Players Grid */}
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full justify-items-center">
+					{players.map((player) => {
+						const character = CHARACTERS.find(
+							(c) => c.id === player.character_key,
+						)
+
+						return (
+							<div
+								key={player.id}
+								className="flex flex-col items-center w-full"
+							>
+								<div className="mb-6 text-center">
+									<h3
+										className={`${cinzel.className} text-2xl text-amber-100 font-bold mb-1`}
+									>
+										{player.name}
+									</h3>
+									<div className="h-0.5 w-24 bg-amber-900/50 mx-auto" />
+								</div>
+
+								{character ? (
+									<CharacterCard character={character} disabled={false} />
+								) : (
+									<div className="w-[380px] aspect-[1/1.35] flex items-center justify-center bg-black/40 border border-dashed border-amber-900/30 rounded-xl">
+										<button
+											onClick={() => router.push('/select-characters')}
+											className="text-amber-700 hover:text-amber-500 transition-colors flex flex-col items-center"
+										>
+											<span className="text-4xl mb-2">?</span>
+											<span className={`${cinzel.className} font-bold`}>
+												Select Character
+											</span>
+										</button>
+									</div>
+								)}
+							</div>
+						)
+					})}
+				</div>
+
+				<div className="mt-20">
+					<button
+						onClick={() => router.push('/')}
+						className={`${cinzel.className} px-10 py-4 bg-black/40 hover:bg-black/60 text-amber-500 border border-amber-900/50 rounded-lg transition-all font-bold tracking-widest uppercase`}
+					>
+						Return to Camp
+					</button>
+				</div>
+			</div>
+
+			{/* Bottom vignette effect */}
+			<div className="fixed bottom-0 left-0 w-full h-32 bg-linear-to-t from-black to-transparent z-1 pointer-events-none" />
+		</main>
+	)
 }
