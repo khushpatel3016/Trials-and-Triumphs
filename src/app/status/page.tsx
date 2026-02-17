@@ -48,7 +48,12 @@ export default function TeamStatusPage() {
 				if (teamError) throw teamError
 
 				if (!teamData) {
-					setIsLoading(false)
+					router.push('/register')
+					return
+				}
+
+				if (teamData.current_step === 'SELECT') {
+					router.push('/select-characters')
 					return
 				}
 
@@ -149,7 +154,7 @@ export default function TeamStatusPage() {
 					No Team Found
 				</h1>
 				<p className="text-stone-400 mb-8">
-					You haven't registered a team yet.
+					You haven&apos;t registered a team yet.
 				</p>
 				<button
 					onClick={() => router.push('/register')}

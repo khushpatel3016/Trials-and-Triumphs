@@ -46,9 +46,20 @@ export default function SelectCharactersPage() {
 					.eq('user_id', user.id)
 					.order('created_at', { ascending: false })
 					.limit(1)
-					.single()
+					.maybeSingle()
 
 				if (teamError) throw teamError
+
+				if (!teamData) {
+					router.push('/register')
+					return
+				}
+
+				if (teamData.current_step === 'COMPLETED') {
+					router.push('/status')
+					return
+				}
+
 				setTeam(teamData)
 
 				// Map flattened columns to players array

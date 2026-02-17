@@ -31,7 +31,31 @@ export default function RegisterPage() {
 		if (!loading && !user) {
 			router.push('/login')
 		}
-	}, [user, loading, router])
+
+		const checkExistingTeam = async () => {
+			if (!user || !supabase) return
+
+			const { data: teamData } = await supabase
+				.from('teams')
+				.select('current_step')
+				.eq('user_id', user.id)
+				.order('created_at', { ascending: false })
+				.limit(1)
+				.maybeSingle()
+
+			if (teamData) {
+				if (teamData.current_step === 'SELECT') {
+					router.push('/select-characters')
+				} else if (teamData.current_step === 'COMPLETED') {
+					router.push('/status')
+				}
+			}
+		}
+
+		if (user) {
+			checkExistingTeam()
+		}
+	}, [user, loading, router, supabase])
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
